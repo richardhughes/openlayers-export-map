@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="http://openlayers.org/api/OpenLayers.js" type="text/javascript"></script>
+        <script src="../ExportMap.js" type="text/javascript"></script>
+        <link rel="stylesheet" href="style.css" type="text/css" />
+        <script>
+            var exportMapControl;
+            window.onload = function() {
+                var map = new OpenLayers.Map({
+                    div: "map",
+                    theme: null,
+                    layers: [
+                        new OpenLayers.Layer.OSM("OpenStreetMap")
+                    ],
+                    center: new OpenLayers.LonLat(0, 0),
+                    zoom: 1
+                });
+
+                exportMapControl = new OpenLayers.Control.ExportMap();
+
+                map.addControl(exportMapControl);
+                exportMap();
+            };
+
+            function exportMap() {
+                exportMapControl.trigger(document.getElementById('mapCanvas'));
+            }
+
+        </script>
+
+    </head>
+    <body>
+        <h1>Export Map Example</h1>
+        <p>Example to demonstrate how to export a map using OpenLayers version 2. 
+            In this example, you should be able to right click the image and save
+            it. Alternatively you could use the <code>toDataURL()</code>
+            function on the canvas. The code and idea came from 
+            <a href="http://dev.openlayers.org/sandbox/camptocamp/canvas/openlayers/examples/exportMapCanvas.html">here</a>,
+            although, this does not work 100%. The only requirement for this to work is that the Vector Layer is using a Canvas Renderer which is documented <a href="http://gis.stackexchange.com/a/71925">here</a>
+        </p><br />
+        <div id="map" style="height:250px; width: 250px; "></div> <br />
+        <h3>Printed Map</h3> <p>
+            <input type="submit" onclick="exportMap()" value="Export Map" />
+        </p>
+        <canvas id="mapCanvas" style="height:250px; width: 250px;"></canvas>
+    </body>
+</html>
