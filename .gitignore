@@ -1,3 +1,2 @@
-/nbproject/
-/config/
-/index.html
+.idea/
+node_modules/
