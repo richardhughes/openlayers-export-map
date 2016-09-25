@@ -2,7 +2,7 @@ module.exports = function(grunt) {
 
     grunt.initConfig({
         uglify: {
-            my_target: {
+            build: {
                 files: [{
                     expand: true,
                     cwd: 'src/',
