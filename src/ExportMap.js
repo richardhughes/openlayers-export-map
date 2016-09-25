@@ -110,21 +110,22 @@ OpenLayers.Control.ExportMap = OpenLayers.Class(OpenLayers.Control, {
      * @returns {undefined}
      */
     stitchTiles: function (layer) {
-        for (var gridIndex in layer.grid) {
-            var grid = layer.grid[gridIndex];
-            for (var tileIndex in grid) {
-                var tile = grid[tileIndex];
-                var url = layer.getURL(tile.bounds);
-                var tileXPosition = tile.position.x + this.offsetX;
-                var tileYPosition = tile.position.y + this.offsetY;
 
-                if (this.tileData[url] === undefined) {
-                    this.tileData[url] = {x: tileXPosition, y: tileYPosition};
+        var that = this;
+        layer.grid.forEach(function (grid) {
+            grid.forEach(function (tile) {
+                var url = layer.getURL(tile.bounds);
+
+                if (!that.tileData[url]) {
+                    that.tileData[url] = {
+                        x: tile.position.x + that.offsetX,
+                        y: tile.position.y + that.offsetY
+                    };
                 }
 
-                this.loadImage(url);
-            }
-        }
+                that.loadImage(url);
+            })
+        });
     },
     /**
      * A function to load the tile image from a URL. When all the images have been loaded
@@ -162,8 +163,8 @@ OpenLayers.Control.ExportMap = OpenLayers.Class(OpenLayers.Control, {
      *
      * @private
      * @param {Canvas|Image} canvasComponent The Canvas or tile image being loaded on to the canvas
-     * @param {integer} x The X coordinate of the image
-     * @param {integer} y The Y coordinate of the image
+     * @param {Number} x The X coordinate of the image
+     * @param {Number} y The Y coordinate of the image
      * @returns {undefined}
      */
     drawCanvasComponent: function (canvasComponent, x, y) {
