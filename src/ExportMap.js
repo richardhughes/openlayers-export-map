@@ -101,6 +101,7 @@ OpenLayers.Control.ExportMap = OpenLayers.Class(OpenLayers.Control, {
     stitchTiles: function (layer) {
 
         var that = this;
+        this.imagePromises = [];
         layer.grid.forEach(function (grid) {
             grid.forEach(function (tile) {
                 var url = layer.getURL(tile.bounds);
@@ -112,9 +113,15 @@ OpenLayers.Control.ExportMap = OpenLayers.Class(OpenLayers.Control, {
                     };
                 }
 
-                that.loadImage(url);
+                that.imagePromises.push(new Promise(function (resolve, reject) {
+                    that.loadImage(resolve, url)
+                }));
             })
         });
+
+        Promise.all(this.imagePromises).then(function(){
+            that.imagesLoaded();
+        })
     },
     /**
      * A function to load the tile image from a URL. When all the images have been loaded
@@ -124,28 +131,30 @@ OpenLayers.Control.ExportMap = OpenLayers.Class(OpenLayers.Control, {
      * @param {String} url
      * @returns {undefined}
      */
-    loadImage: function (url) {
+    loadImage: function (resolve, url) {
         var image = new Image();
         var that = this;
 
         image.onload = function () {
-            var canvasComponents = that.canvasComponents;
             // Add the tile to the front of the array
-            canvasComponents.unshift(this);
-            // Check to see if we have finished loading all the images
-            if (canvasComponents.length >= Object.keys(that.tileData).length) {
-                canvasComponents.forEach(function (canvasComponent) {
-                    if (canvasComponent.toString().indexOf('HTMLCanvasElement') > -1) {
-                        that.drawCanvasComponent(canvasComponent, 0, 0);
-                        return true;
-                    }
-
-                    var pos = that.tileData[canvasComponent.src];
-                    that.drawCanvasComponent(canvasComponent, pos.x, pos.y);
-                });
-            }
+            that.canvasComponents.unshift(this);
+            resolve(image);
         };
+
         image.src = url;
+    },
+
+    imagesLoaded: function () {
+        var that = this;
+        this.canvasComponents.forEach(function (canvasComponent) {
+            if (canvasComponent.toString().indexOf('HTMLCanvasElement') > -1) {
+                that.drawCanvasComponent(canvasComponent, 0, 0);
+                return true;
+            }
+
+            var pos = that.tileData[canvasComponent.src];
+            that.drawCanvasComponent(canvasComponent, pos.x, pos.y);
+        });
     },
     /**
      * Draws a canvas component onto the canvas context
