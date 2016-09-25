@@ -26,17 +26,6 @@ OpenLayers.Control.ExportMap = OpenLayers.Class(OpenLayers.Control, {
         this.canvasComponents = [];
         this.tileData = {};
 
-        // Create this function so we can use it later on
-        Object.size = function (object) {
-            var size = 0;
-            for (var key in object) {
-                if (object.hasOwnProperty(key)) {
-                    size++;
-                }
-            }
-            return size;
-        };
-
         this.map.layers.forEach(function (layer) {
             if (layer.visibility) {
                 if (layer instanceof OpenLayers.Layer.Vector) {
@@ -58,7 +47,7 @@ OpenLayers.Control.ExportMap = OpenLayers.Class(OpenLayers.Control, {
      * @returns {undefined}
      */
     setUpCanvas: function (canvas) {
-        if (canvas === undefined) {
+        if (!canvas) {
             this.canvas = document.createElement('canvas');
         } else {
             this.canvas = canvas;
@@ -144,16 +133,16 @@ OpenLayers.Control.ExportMap = OpenLayers.Class(OpenLayers.Control, {
             // Add the tile to the front of the array
             canvasComponents.unshift(this);
             // Check to see if we have finished loading all the images
-            if (canvasComponents.length >= Object.size(that.tileData)) {
-                for (var i in canvasComponents) {
-                    var canvasComponent = canvasComponents[i];
+            if (canvasComponents.length >= Object.keys(that.tileData).length) {
+                canvasComponents.forEach(function (canvasComponent) {
                     if (canvasComponent.toString().indexOf('HTMLCanvasElement') > -1) {
                         that.drawCanvasComponent(canvasComponent, 0, 0);
-                    } else {
-                        var pos = that.tileData[canvasComponent.src];
-                        that.drawCanvasComponent(canvasComponent, pos.x, pos.y);
+                        return true;
                     }
-                }
+
+                    var pos = that.tileData[canvasComponent.src];
+                    that.drawCanvasComponent(canvasComponent, pos.x, pos.y);
+                });
             }
         };
         image.src = url;
