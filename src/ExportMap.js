@@ -113,15 +113,17 @@ OpenLayers.Control.ExportMap = OpenLayers.Class(OpenLayers.Control, {
                     };
                 }
 
-                that.imagePromises.push(new Promise(function (resolve, reject) {
-                    that.loadImage(resolve, url)
-                }));
+                that.imagePromises.push(
+                    new Promise(function (resolve, reject) {
+                        that.loadImage(resolve, url)
+                    }));
             })
         });
 
-        Promise.all(this.imagePromises).then(function(){
-            that.imagesLoaded();
-        })
+        Promise.all(this.imagePromises)
+            .then(function(){
+                that.drawLoadedImages()
+            });
     },
     /**
      * A function to load the tile image from a URL. When all the images have been loaded
@@ -143,8 +145,12 @@ OpenLayers.Control.ExportMap = OpenLayers.Class(OpenLayers.Control, {
 
         image.src = url;
     },
-
-    imagesLoaded: function () {
+    /**
+     * Draw the loaded images
+     *
+     * @private
+     */
+    drawLoadedImages: function () {
         var that = this;
         this.canvasComponents.forEach(function (canvasComponent) {
             if (canvasComponent.toString().indexOf('HTMLCanvasElement') > -1) {
