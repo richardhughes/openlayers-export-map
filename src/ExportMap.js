@@ -135,7 +135,7 @@ OpenLayers.Control.ExportMap = OpenLayers.Class(OpenLayers.Control, {
      * @returns {undefined}
      */
     loadImage: function (resolve, url) {
-        var image = new Image();
+        var image = document.createElement('img');
         var that = this;
 
         image.onload = function () {
