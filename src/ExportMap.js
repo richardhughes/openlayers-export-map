@@ -130,6 +130,7 @@ OpenLayers.Control.ExportMap = OpenLayers.Class(OpenLayers.Control, {
      * it will proceed to draw the images on the canvas using the drawCanvasComponent function
      *
      * @private
+     * @param {} resolve
      * @param {String} url
      * @returns {undefined}
      */
