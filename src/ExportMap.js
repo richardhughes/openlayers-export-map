@@ -13,6 +13,13 @@ OpenLayers.Control.ExportMap = OpenLayers.Class(OpenLayers.Control, {
     canvasComponents: [],
     tileData: {},
     /**
+     * Remove all the Canvas Components and the Tile Data
+     */
+    removeStoredData: function () {
+        this.canvasComponents = [];
+        this.tileData = {};
+    },
+    /**
      * A function to trigger the ExportMap functions.
      *
      * @public
@@ -23,8 +30,7 @@ OpenLayers.Control.ExportMap = OpenLayers.Class(OpenLayers.Control, {
 
         this.setUpCanvas(canvas);
 
-        this.canvasComponents = [];
-        this.tileData = {};
+        this.removeStoredData();
 
         this.map.layers.forEach(function (layer) {
             if (layer.visibility) {
@@ -102,8 +108,8 @@ OpenLayers.Control.ExportMap = OpenLayers.Class(OpenLayers.Control, {
 
         var that = this;
         this.imagePromises = [];
-        layer.grid.forEach(function (grid) {
-            grid.forEach(function (tile) {
+        layer.grid.forEach(function (tiles) {
+            tiles.forEach(function (tile) {
                 var url = layer.getURL(tile.bounds);
 
                 if (!that.tileData[url]) {
@@ -118,7 +124,7 @@ OpenLayers.Control.ExportMap = OpenLayers.Class(OpenLayers.Control, {
         });
 
         Promise.all(this.imagePromises)
-            .then(function(){
+            .then(function () {
                 that.drawLoadedImages()
             });
     },
