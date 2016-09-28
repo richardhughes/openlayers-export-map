@@ -113,10 +113,7 @@ OpenLayers.Control.ExportMap = OpenLayers.Class(OpenLayers.Control, {
                     };
                 }
 
-                that.imagePromises.push(
-                    new Promise(function (resolve, reject) {
-                        that.loadImage(resolve, url)
-                    }));
+                that.imagePromises.push(that.loadImage(url));
             })
         });
 
@@ -130,21 +127,23 @@ OpenLayers.Control.ExportMap = OpenLayers.Class(OpenLayers.Control, {
      * it will proceed to draw the images on the canvas using the drawCanvasComponent function
      *
      * @private
-     * @param {} resolve
      * @param {String} url
-     * @returns {undefined}
+     * @returns {Promise}
      */
-    loadImage: function (resolve, url) {
-        var image = document.createElement('img');
+    loadImage: function (url) {
         var that = this;
+        return new Promise(function (resolve, reject) {
+            var image = document.createElement('img');
+            var that2 = that;
 
-        image.onload = function () {
-            // Add the tile to the front of the array
-            that.canvasComponents.unshift(this);
-            resolve(image);
-        };
+            image.onload = function () {
+                // Add the tile to the front of the array
+                that2.canvasComponents.unshift(image);
+                resolve(image);
+            };
 
-        image.src = url;
+            image.src = url;
+        });
     },
     /**
      * Draw the loaded images
