@@ -78,7 +78,7 @@ OpenLayers.Control.ExportMap = OpenLayers.Class(OpenLayers.Control, {
         }
 
         var canvasRenderer = layer.renderer;
-        if (canvasRenderer.canvas !== null) {
+        if (canvasRenderer.canvas) {
             var canvasContext = canvasRenderer.canvas;
             this.canvasComponents.push(canvasContext.canvas);
         }
@@ -140,11 +140,16 @@ OpenLayers.Control.ExportMap = OpenLayers.Class(OpenLayers.Control, {
         var that = this;
         return new Promise(function (resolve, reject) {
             var image = document.createElement('img');
-            var that2 = that;
+
+            image.onerror = function () {
+                var placeholderUrl = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs%3D';
+                image.src = placeholderUrl;
+                that.tileData[placeholderUrl] = that.tileData[url];
+            };
 
             image.onload = function () {
                 // Add the tile to the front of the array
-                that2.canvasComponents.unshift(image);
+                that.canvasComponents.unshift(image);
                 resolve(image);
             };
 
